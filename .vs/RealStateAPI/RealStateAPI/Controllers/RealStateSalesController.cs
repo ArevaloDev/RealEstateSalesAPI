@@ -40,5 +40,33 @@ namespace RealStateAPI.Controllers
 
             });
         }
+
+        [HttpPut("{id}")]
+        public async Task<ActionResult<HousingLocation>> UpdateHousingLocation(int id, HousingLocation body)
+        {
+            if(id != body.Id)
+            {
+                return BadRequest();
+            }
+            _context.Entry(body).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if(!_context.HousingLocations.Any(e => e.Id == id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return NoContent();
+        }
     }
 }
